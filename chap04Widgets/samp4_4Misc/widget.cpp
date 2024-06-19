@@ -11,6 +11,29 @@ Widget::Widget(QWidget *parent) :
     ui->setupUi(this);
     this->setLayout(ui->horizontalLayout);  //设置窗口的主布局组件
 
+    QProgressBar *progBarV = new QProgressBar;
+    progBarV->setRange(0, 100); // 设置范围
+    progBarV->setValue(25); // 设置当前值
+    progBarV->setOrientation(Qt::Vertical); // 设置为垂直方向
+    progBarV->setTextVisible(true); // 显示进度文本
+    progBarV->setFormat("%p%"); // 显示百分比
+    //progBarV->setAlignment(Qt::AlignTop); // 设置文本居中对齐
+    //progBarV->setTextDirection(QProgressBar::TopToBottom);
+
+    //QString value1 = "QProgressBar {border-radius: 25px};";
+    //progBarV->setStyleSheet(value1);
+    // 设置样式表
+    progBarV->setStyleSheet("QProgressBar {"
+                           "background-color: lightgray;"
+                           "border: 1px solid gray;"
+                           "border-radius: 5px;"
+                           "text-align: center;"
+                           "}"
+                           "QProgressBar::chunk {"
+                           "background-color: #05B8CC;"
+                           "}");
+    ui->horizontalLayout_3->addWidget(progBarV);
+
     QObject::connect(ui->SliderGreen,SIGNAL(valueChanged(int)),  //关联 SliderGreen 的valueChanged()
                      this,SLOT(on_SliderRed_valueChanged(int)));
 
