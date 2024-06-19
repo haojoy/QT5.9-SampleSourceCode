@@ -3,6 +3,7 @@
 
 #include    <QTreeWidgetItem>
 #include    <QFileDialog>
+#include    <QDebug>
 
 void MainWindow::iniTree()
 { //初始化Tree
@@ -150,6 +151,10 @@ void MainWindow::on_actAddFolder_triggered()
   {
 //      QTreeWidgetItem *parItem; //节点
       QTreeWidgetItem* parItem=ui->treeFiles->currentItem(); //当前节点
+      if(parItem == nullptr){
+          //当没有选择item时，默认使用顶层节点
+          parItem=ui->treeFiles->topLevelItem(0);  // iniTree添加了顶层节点
+      }
       addFolderItem(parItem,dir);//在父节点下面添加一个组节点
   }
 }
@@ -162,6 +167,9 @@ void MainWindow::on_actAddFiles_triggered()
 
     QTreeWidgetItem *parItem,*item; //节点
     item=ui->treeFiles->currentItem(); //当前节点
+    if(item == nullptr){
+        item=ui->treeFiles->topLevelItem(0);
+    }
 
     if (item->type()==itImageItem) //若当前节点是图片节点，取其父节点作为父节点
        parItem=item->parent();
@@ -171,6 +179,7 @@ void MainWindow::on_actAddFiles_triggered()
     for (int i = 0; i < files.size(); ++i)
     {
         QString aFilename=files.at(i); //得到StringList里的一行，也就是一个文件名
+        // qDebug() <<"文件名: " << aFilename;
         addImageItem(parItem,aFilename); //添加一个图片节点
     }
 }
