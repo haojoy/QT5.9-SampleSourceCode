@@ -13,7 +13,7 @@ Dialog::Dialog(QWidget *parent) :
     fTimer=new QTimer(this);  //创建定时器
     fTimer->stop();
     fTimer->setInterval(1000);//设置定时周期,单位：毫秒
-    connect(fTimer,SIGNAL(timeout()),this,SLOT(on_timer_timeout())); //关联定时器的信号与槽
+    connect(fTimer,SIGNAL(timeout()),this,SLOT(onTimerTimeout())); //关联定时器的信号与槽
 }
 
 Dialog::~Dialog()
@@ -22,7 +22,7 @@ Dialog::~Dialog()
     delete ui;
 }
 
-void Dialog::on_timer_timeout()
+void Dialog::onTimerTimeout()
 { //定时器中断响应槽函数
     QTime curTime=QTime::currentTime(); //获取当前时间
 

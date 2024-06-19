@@ -3,7 +3,7 @@
 
 #include    <QDialog>
 #include    <QTimer>
-#include    <QTime>
+#include    <QElapsedTimer>
 
 namespace Ui {
 class Dialog;
@@ -15,14 +15,14 @@ class Dialog : public QDialog
 private:
     QTimer *fTimer;  //定时器
 
-    QTime   fTimeCounter;//计时器
+    QElapsedTimer   fTimeCounter;//计时器
 
 public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
 
 private slots:
-    void on_timer_timeout(); //定时器中断处理槽函数,手工定义
+    void onTimerTimeout(); //定时器中断处理槽函数,手工定义
 
 
     void on_btnGetTime_clicked();//读取当前时间
