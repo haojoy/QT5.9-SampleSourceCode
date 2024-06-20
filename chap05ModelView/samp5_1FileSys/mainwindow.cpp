@@ -14,10 +14,17 @@ MainWindow::MainWindow(QWidget *parent) :
     model=new QFileSystemModel(this); //QFileSystemModel提供单独线程，推荐使用
     model->setRootPath(QDir::currentPath()); //设置根目录
 
+    // 拖动窗口最小时不让窗口消失
+    ui->splitter_3->setChildrenCollapsible(false);
+    ui->splitter_2->setChildrenCollapsible(false);
+    ui->splitter->setChildrenCollapsible(false);
+
     ui->treeView->setModel(model); //设置数据模型
     ui->listView->setModel(model); //设置数据模型
     ui->tableView->setModel(model); //设置数据模型
 
+    // 拖动改变窗口列未正确拉伸文件名显示问题
+    ui->treeView->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 //信号与槽关联，treeView单击时，其目录设置为listView和tableView的根节点
     connect(ui->treeView,SIGNAL(clicked(QModelIndex)),
             ui->listView,SLOT(setRootIndex(QModelIndex)));
