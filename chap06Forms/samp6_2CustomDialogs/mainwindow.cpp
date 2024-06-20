@@ -6,17 +6,30 @@
 
 #include    "qwdialogsize.h"
 
-
+#include <QDebug>
 void MainWindow::closeEvent(QCloseEvent *event)
 { //窗口关闭时询问是否退出
-   QMessageBox::StandardButton result=QMessageBox::question(this, "确认", "确定要退出本程序吗？",
-                      QMessageBox::Yes|QMessageBox::No |QMessageBox::Cancel,
-                      QMessageBox::No);
+//   QMessageBox::StandardButton result=QMessageBox::question(this, "确认", "确定要退出本程序吗？",
+//                      QMessageBox::Yes|QMessageBox::No |QMessageBox::Cancel,
+//                      QMessageBox::No);
 
-    if (result==QMessageBox::Yes)
+    QMessageBox messageBox;
+    messageBox.setWindowTitle("关闭确认");
+    messageBox.setText("确定要退出本程序吗？");
+    messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+    messageBox.setDefaultButton(QMessageBox::Yes);
+    messageBox.setWindowFlag(Qt::WindowStaysOnTopHint); // 设置为最顶层显示
+
+    int result = messageBox.exec();
+    if (result==QMessageBox::Yes){
+//        if(dlgLocate != nullptr){
+//            dlgLocate->close();
+//        }
         event->accept();
-    else
+    }
+    else{
         event->ignore();
+    }
 }
 
 MainWindow::MainWindow(QWidget *parent) :
