@@ -5,7 +5,7 @@
 #include    <QLabel>
 #include    <QStandardItemModel>
 #include    <QItemSelectionModel>
-
+#include <QtDebug>
 //#include    "qwintspindelegate.h"
 //#include    "qwfloatspindelegate.h"
 
@@ -13,6 +13,15 @@
 
 
 #define     FixedColumnCount    6       //文件固定6列
+
+// 指针判空
+#define CHECK_PTR(ptr) \
+    do { \
+        if (!(ptr)) { \
+            qCritical() << "Pointer" << #ptr << "is null at" << __FILE__ << ":" << __LINE__; \
+            return; \
+        } \
+    } while (0)
 
 namespace Ui {
 class MainWindow;

@@ -30,6 +30,7 @@ void MainWindow::iniModelFromStringList(QStringList& aFileContent)
         for (j=0;j<FixedColumnCount-1;j++) //tmpList的行数等于FixedColumnCount, 固定的
         { //不包含最后一列
             aItem=new QStandardItem(tmpList.at(j));//创建item
+            // aItem->setEditable(false);
             theModel->setItem(i-1,j,aItem); //为模型的某个行列位置设置Item
         }
 
@@ -41,6 +42,7 @@ void MainWindow::iniModelFromStringList(QStringList& aFileContent)
             aItem->setCheckState(Qt::Unchecked); //根据数据设置check状态
         else
             aItem->setCheckState(Qt::Checked);
+        // aItem->setEditable(false);
         theModel->setItem(i-1,j,aItem); //为模型的某个行列位置设置Item
     }
 }
@@ -58,13 +60,17 @@ MainWindow::MainWindow(QWidget *parent) :
 //选择当前单元格变化时的信号与槽
     connect(theSelection,SIGNAL(currentChanged(QModelIndex,QModelIndex)),
             this,SLOT(on_currentChanged(QModelIndex,QModelIndex)));
-
     //为tableView设置数据模型
     ui->tableView->setModel(theModel); //设置数据模型
     ui->tableView->setSelectionModel(theSelection);//设置选择模型
     ui->tableView->setSelectionMode(QAbstractItemView::ExtendedSelection);//
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectItems);
 
+    ui->tableView->setEditTriggers(//QAbstractItemView::AnyKeyPressed |
+                                 //QAbstractItemView::SelectedClicked |
+                                 //QAbstractItemView::EditKeyPressed |
+                                 //QAbstractItemView::DoubleClicked |
+                                  QAbstractItemView::NoEditTriggers);
 //    ui->tableView->setItemDelegateForColumn(0,&intSpinDelegate); //设置代理组件
 //    ui->tableView->setItemDelegateForColumn(1,&floatSpinDelegate);
 //    ui->tableView->setItemDelegateForColumn(2,&floatSpinDelegate);
@@ -99,7 +105,9 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::on_currentChanged(const QModelIndex &current, const QModelIndex &previous)
-{ //选择单元格变化时的响应
+{
+    Q_UNUSED(previous)
+    //选择单元格变化时的响应
     if (current.isValid()) //当前模型索引有效
     {
         LabCellPos->setText(QString::asprintf("当前单元格：%d行，%d列",
@@ -217,6 +225,7 @@ void MainWindow::on_actModelData_triggered()
     for (i=0;i<theModel->columnCount();i++)
     { //
         aItem=theModel->horizontalHeaderItem(i); //获取表头的一个项数据
+        CHECK_PTR(aItem);
         str=str+aItem->text()+"\t"; //用TAB间隔文字
     }
     ui->plainTextEdit->appendPlainText(str); //添加为文本框的一行
@@ -267,6 +276,7 @@ void MainWindow::on_actSave_triggered()
     for (i=0;i<theModel->columnCount();i++)
     {
         aItem=theModel->horizontalHeaderItem(i); //获取表头的项数据
+        CHECK_PTR(aItem);
         str=str+aItem->text()+"\t\t";  //以TAB见隔开
     }
     aStream<<str<<"\n";  //文件里需要加入换行符 \n
