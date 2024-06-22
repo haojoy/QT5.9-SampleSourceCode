@@ -16,8 +16,8 @@ void MainWindow::iniCamera()
 
     QCameraViewfinderSettings viewfinderSettings;
     viewfinderSettings.setResolution(640, 480);
-    viewfinderSettings.setMinimumFrameRate(15.0);
-    viewfinderSettings.setMaximumFrameRate(30.0);
+//    viewfinderSettings.setMinimumFrameRate(15.0);
+//    viewfinderSettings.setMaximumFrameRate(30.0);
     curCamera->setViewfinderSettings(viewfinderSettings);
 
     curCamera->setViewfinder(ui->viewFinder); //设置取景框预览
@@ -349,7 +349,7 @@ void MainWindow::on_actVideoStop_triggered()
 
 void MainWindow::on_btnVideoFile_clicked()
 {
-    QString curPath=QDir::homePath();//获取系统当前目录
+    QString curPath=QDir::currentPath();//获取系统当前目录
     QString dlgTitle="选择保存文件"; //对话框标题
     QString filter="ogg(*.ogg)"; //文件过滤器
     QString selectedFile=QFileDialog::getSaveFileName(this,dlgTitle,curPath,filter);
