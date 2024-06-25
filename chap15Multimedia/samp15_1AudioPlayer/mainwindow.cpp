@@ -9,7 +9,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    setAcceptDrops(true);
+    ui->listWidget->setSelectionMode(QAbstractItemView::MultiSelection);
     player = new QMediaPlayer(this);//
     playlist = new QMediaPlaylist(this);//
     playlist->setPlaybackMode(QMediaPlaylist::Loop); //循环模式
@@ -87,10 +88,13 @@ void MainWindow::on_btnAdd_clicked()
      for (int i=0; i<fileList.count();i++)
      {
         QString aFile=fileList.at(i);
-        playlist->addMedia(QUrl::fromLocalFile(aFile));//添加文件
-
-        QFileInfo   fileInfo(aFile);
-        ui->listWidget->addItem(fileInfo.fileName());//添加到界面文件列表
+        QFileInfo fileInfo(aFile);
+        QString filename = fileInfo.fileName();
+        if(!songlist.contains(filename)){
+            songlist.insert(filename);
+            playlist->addMedia(QUrl::fromLocalFile(aFile));//添加文件
+            ui->listWidget->addItem(filename);//添加到界面文件列表
+        }
      }
 
      if (player->state()!=QMediaPlayer::PlayingState)
@@ -126,6 +130,7 @@ void MainWindow::on_btnClear_clicked()
 {//清空列表
     playlist->clear();
     ui->listWidget->clear();
+    songlist.clear();
     player->stop();
 }
 
@@ -151,10 +156,10 @@ void MainWindow::on_sliderPosition_valueChanged(int value)
 
 void MainWindow::on_btnRemove_clicked()
 {//移除一个文件
+    /*
     int pos=ui->listWidget->currentRow();
     QListWidgetItem *item=ui->listWidget->takeItem(pos);
     delete item;//从listWidget里删除
-
     if (playlist->currentIndex()==pos) //是当前播放的曲目
     {
         int nextPos=0;
@@ -173,8 +178,36 @@ void MainWindow::on_btnRemove_clicked()
             ui->LabCurMedia->setText("无曲目");
         }
     }
-    else
+    else{
         playlist->removeMedia(pos);
+    }
+*/
+
+    // 移除多个文件
+    int nextPos=0;
+    QList<QListWidgetItem *> selectedItems = ui->listWidget->selectedItems();
+    for (QListWidgetItem *item : selectedItems) {
+        songlist.remove(item->text());
+        int delpos = ui->listWidget->row(item);
+        delete item;
+        qDebug() << "playlist currentIndex:"<<playlist->currentIndex() << "delpos: " << delpos;
+        if(playlist->currentIndex() == delpos){
+            nextPos= delpos >= 1 ? delpos - 1 : 0;
+            player->stop();
+        }
+        playlist->removeMedia(delpos);
+    }
+    if (ui->listWidget->count()>0)
+    {
+        playlist->setCurrentIndex(nextPos);
+        onPlaylistChanged(nextPos);
+        player->play();
+    }
+    else
+    {
+        ui->LabCurMedia->setText("无曲目");
+    }
+    //
 }
 
 void MainWindow::on_btnPrevious_clicked()
@@ -185,4 +218,29 @@ void MainWindow::on_btnPrevious_clicked()
 void MainWindow::on_btnNext_clicked()
 {//下一文件
     playlist->next();
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event){
+    if (event->mimeData()->hasUrls()) {
+        event->acceptProposedAction();
+    }
+}
+
+void MainWindow::dropEvent(QDropEvent *event){
+    QList<QMediaContent> items;
+    QStringList filenames;
+    for (const QUrl &url : event->mimeData()->urls()) {
+        QString file = url.toLocalFile();
+        QFileInfo fileInfo(file);
+        QString filename = fileInfo.fileName();
+        if(!songlist.contains(filename)){
+            songlist.insert(filename);
+            filenames << filename;
+            items << QUrl::fromLocalFile(file);
+        }
+    }
+    playlist->addMedia(items);//添加文件
+    ui->listWidget->addItems(filenames);//添加到界面文件列表
+
+
 }
